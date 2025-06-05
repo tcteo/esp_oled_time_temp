@@ -1,9 +1,9 @@
 # esp_oled_time_temp
 
 - ESP8266 D1 Mini
-- SSD1306 OLED display
-- MCP9808 temperature sensor
-- NTP time sync
+- SSD1306 OLED display ([library](https://registry.platformio.org/libraries/adafruit/Adafruit%20SSD1306/))
+- MCP9808 temperature sensor ([library](https://registry.platformio.org/libraries/adafruit/Adafruit%20MCP9808%20Library))
+- NTP time sync ([library](https://registry.platformio.org/libraries/sstaub/NTP))
 
 ![](esp_oled_time_temp.jpg)
 
