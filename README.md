@@ -5,6 +5,8 @@
 - SSD1306 OLED display
 - NTP
 
+![](pic.png)
+
 ## Building and Flashing
 
 Build only
