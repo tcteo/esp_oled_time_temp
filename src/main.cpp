@@ -132,7 +132,7 @@ void loop() {
     display.println("      AEST");
   }
 
-  display.printf("temp: %.1f C\n", event.temperature);
+  display.printf("%.1f C\n", event.temperature);
   display.display();
   delay(50);
 }

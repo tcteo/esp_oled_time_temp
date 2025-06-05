@@ -1,11 +1,11 @@
 # esp_oled_time_temp
 
 - ESP8266 D1 Mini
-- MCP9808 Temperature Sensor
 - SSD1306 OLED display
-- NTP
+- MCP9808 temperature sensor
+- NTP time sync
 
-![](pic.png)
+![](esp_oled_time_temp.jpg)
 
 ## Building and Flashing
 
