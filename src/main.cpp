@@ -34,8 +34,6 @@ Adafruit_MCP9808 tempSensor;
 WiFiUDP wifiUdp;
 NTP ntp(wifiUdp);
 
-const int ledPin = D4; // GPIO2=D4 for LED on ESP8266 NodeMCU/D1mini
-
 void setup_wifi() {
   delay(10);
   WiFi.mode(WIFI_STA);
@@ -71,7 +69,9 @@ void setup_wifi() {
 
 void setup() {
   // Initialize LED pin
-  pinMode(ledPin, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+  // LED off (active low)
+  digitalWrite(LED_BUILTIN, HIGH);
 
   // Initialize serial port
   Serial.begin(115200);
