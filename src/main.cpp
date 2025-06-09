@@ -44,6 +44,7 @@ NTP ntpSyd(wifiUdp);
 NTP ntpPT(wifiUdp);
 NTP ntpET(wifiUdp);
 NTP ntpUTC(wifiUdp);
+NTP ntpLON(wifiUdp);
 NTP ntpSG(wifiUdp);
 NTP ntpIndia(wifiUdp);
 
@@ -130,21 +131,32 @@ void setup() {
   }
 
   // Initialize NTP
+  const int ntpUpdateIntervalMs = 10000; // 10s
   ntpSyd.ruleDST("AEDT", First, Sun, Oct, 2, 11 * 60);
   ntpSyd.ruleSTD("AEST", First, Sun, Apr, 3, 10 * 60);
+  ntpSyd.updateInterval(ntpUpdateIntervalMs);
   ntpSyd.begin();
   ntpPT.ruleDST("PDT", Second, Sun, Mar, 2, -7 * 60);
   ntpPT.ruleSTD("PST", First, Sun, Nov, 3, -8 * 60);
+  ntpPT.updateInterval(ntpUpdateIntervalMs);
   ntpPT.begin();
   ntpET.ruleDST("EDT", Second, Sun, Mar, 2, -4 * 60);
   ntpET.ruleSTD("EST", First, Sun, Nov, 3, -5 * 60);
+  ntpET.updateInterval(ntpUpdateIntervalMs);
   ntpET.begin();
+  ntpUTC.updateInterval(ntpUpdateIntervalMs);
   ntpUTC.begin();
+  ntpLON.ruleDST("BST", Last, Sun, Mar, 1, 1 * 60);
+  ntpLON.ruleSTD("GMT", Last, Sun, Oct, 2, 0);
+  ntpLON.updateInterval(ntpUpdateIntervalMs);
+  ntpLON.begin();
   ntpIndia.timeZone(5, 30);
   ntpIndia.isDST(false);
+  ntpIndia.updateInterval(ntpUpdateIntervalMs);
   ntpIndia.begin();
   ntpSG.timeZone(8, 0);
   ntpSG.isDST(false);
+  ntpSG.updateInterval(ntpUpdateIntervalMs);
   ntpSG.begin();
 
   Serial.println("setup() done");
@@ -204,7 +216,10 @@ void loop() {
   u8g2.print("utc");
   display_y += u8g2_font3_height + line_spacing;
   u8g2.setCursor(0, display_y);
-  u8g2.print(ntpIndia.formattedTime("%H:%M"));
+  u8g2.print(ntpLON.formattedTime("%H"));
+  u8g2.print("lon");
+  u8g2.print(" ");
+  u8g2.print(ntpIndia.formattedTime("%H%M"));
   u8g2.print("in");
   u8g2.print(" ");
   u8g2.print(ntpSG.formattedTime("%H"));
