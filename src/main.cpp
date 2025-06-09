@@ -19,8 +19,8 @@
 #define OLED_RESET -1
 #define SCREEN_ADDRESS 0x3D // 0x3D for 128x64, 0x3C for 128x32
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C
-    u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE, /* clock=*/D1,
-         /* data=*/D2); // ESP32 Thing, HW I2C with pin remapping
+u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE, /* clock=*/D1,
+     /* data=*/D2); // ESP32 Thing, HW I2C with pin remapping
 
 #define STRINGIZE(arg) #arg
 #define SVAL(x) STRINGIZE(x)
@@ -42,12 +42,20 @@ Adafruit_MCP9808 tempSensor;
 WiFiUDP wifiUdp;
 NTP ntpSyd(wifiUdp);
 NTP ntpPT(wifiUdp);
+NTP ntpET(wifiUdp);
 NTP ntpUTC(wifiUdp);
+NTP ntpSG(wifiUdp);
+NTP ntpIndia(wifiUdp);
 
 // const uint8_t *u8g2_font = u8g2_font_shylock_nbp_t_all;
 // const int u8g2_font_height = 12;
-const uint8_t *u8g2_font = u8g2_font_pxplusibmvga8_m_all;
+const uint8_t *u8g2_font = u8g2_font_7x14_mf; // u8g2_font_pxplusibmvga8_m_all;
 const int u8g2_font_height = 10;
+const uint8_t *u8g2_font2 = u8g2_font_t0_17b_mf; // u8g2_font_shylock_nbp_t_all;
+const int u8g2_font2_height = 11;
+const uint8_t *u8g2_font3 = u8g2_font_t0_13_mf ; // u8g2_font_shylock_nbp_t_all;
+const int u8g2_font3_height = 9;
+
 const int line_spacing = 3;
 
 void setup_wifi() {
@@ -128,7 +136,16 @@ void setup() {
   ntpPT.ruleDST("PDT", Second, Sun, Mar, 2, -7 * 60);
   ntpPT.ruleSTD("PST", First, Sun, Nov, 3, -8 * 60);
   ntpPT.begin();
+  ntpET.ruleDST("EDT", Second, Sun, Mar, 2, -4 * 60);
+  ntpET.ruleSTD("EST", First, Sun, Nov, 3, -5 * 60);
+  ntpET.begin();
   ntpUTC.begin();
+  ntpIndia.timeZone(5, 30);
+  ntpIndia.isDST(false);
+  ntpIndia.begin();
+  ntpSG.timeZone(8, 0);
+  ntpSG.isDST(false);
+  ntpSG.begin();
 
   Serial.println("setup() done");
 }
@@ -143,6 +160,9 @@ void loop() {
   // Serial.print(" degC");
   // Serial.println("");
 
+  char tempStr[10];
+  sprintf(tempStr, "%.1f°C", event.temperature);
+
   u8g2.clearBuffer();
   int display_y = 0;
 
@@ -150,7 +170,13 @@ void loop() {
   u8g2.setCursor(0, display_y);
   u8g2.print(ntpSyd.formattedTime("%Y-%m-%d"));
 
-  display_y += u8g2_font_height + line_spacing;
+  u8g2.setCursor(128-u8g2.getUTF8Width(tempStr), display_y);
+  u8g2.print(tempStr);
+
+  // use a different font for the time
+  u8g2.setFont(u8g2_font2);
+  display_y += u8g2_font2_height + line_spacing;
+  display_y += 3; // adjust
   u8g2.setCursor(0, display_y);
   u8g2.print(ntpSyd.formattedTime("%H:%M:%S"));
   if (ntpSyd.isDST()) {
@@ -158,18 +184,11 @@ void loop() {
   } else {
     u8g2.println(" AEST");
   }
+  u8g2.setFont(u8g2_font); // reset font
 
-  display_y += u8g2_font_height + line_spacing;
-  u8g2.setCursor(0, display_y);
-  char tempStr[10];
-  sprintf(tempStr, "%.1f°C", event.temperature);
-  u8g2.print(tempStr);
-
-  display_y += u8g2_font_height + line_spacing;
-
-  display_y += u8g2_font_height + line_spacing;
-  display_y -=
-      3; // minor adjustment after blank line, won't fit on display otherwise
+  u8g2.setFont(u8g2_font3);
+  display_y += u8g2_font3_height + line_spacing;
+  display_y += 8; // adjust
   u8g2.setCursor(0, display_y);
   u8g2.print(ntpPT.formattedTime("%H"));
   if (ntpPT.isDST()) {
@@ -178,8 +197,18 @@ void loop() {
     u8g2.println("pst");
   }
   u8g2.print(" ");
+  u8g2.print(ntpET.formattedTime("%H"));
+  u8g2.print("ny");
+  u8g2.print(" ");
   u8g2.print(ntpUTC.formattedTime("%H"));
   u8g2.print("utc");
+  display_y += u8g2_font3_height + line_spacing;
+  u8g2.setCursor(0, display_y);
+  u8g2.print(ntpIndia.formattedTime("%H:%M"));
+  u8g2.print("in");
+  u8g2.print(" ");
+  u8g2.print(ntpSG.formattedTime("%H"));
+  u8g2.print("sg");
 
   u8g2.sendBuffer();
   delay(10);
