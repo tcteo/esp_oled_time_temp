@@ -11,3 +11,6 @@ wheels/
 
 # PlatformIO
 .pio
+
+# ignore env file
+/.env
