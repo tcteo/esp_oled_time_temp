@@ -316,7 +316,9 @@ void loop() {
     u8g2_2.setFont(font2_1);
     display_y += font2_1_height + line_spacing;
     u8g2_2.setCursor(0, display_y);
-    u8g2_2.print(ntpIndia.formattedTime("%H:%M"));
+    u8g2_2.print(ntpIndia.formattedTime("%H"));
+    // u8g2_2.setFont(font1);
+    u8g2_2.print(ntpIndia.formattedTime(":%M"));
     u8g2_2.setFont(font1);
     u8g2_2.print("IN");
     u8g2_2.setFont(font2_1);
