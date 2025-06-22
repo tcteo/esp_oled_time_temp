@@ -63,6 +63,9 @@ const int font2_height = 11;
 const uint8_t *font3 = u8g2_font_t0_13_mf; // u8g2_font_shylock_nbp_t_all;
 const int font3_height = 9;
 
+const uint8_t *font2_1 = u8g2_font_profont22_tf;
+const int font2_1_height = 14;
+
 const int line_spacing = 3;
 
 void setup_wifi() {
@@ -251,25 +254,24 @@ void loop() {
   } else if (numDisplays == 2) {
 
     u8g2_1.clearBuffer();
+    u8g2_1.setFont(font2_1);
     display_y = 0;
-    display_y += font1_height + line_spacing;
+    display_y += font2_1_height + line_spacing;
     u8g2_1.setCursor(0, display_y);
     u8g2_1.print(ntpSyd.formattedTime("%Y-%m-%d"));
 
-    // use a different font for the time
-    u8g2_1.setFont(font2);
-    display_y += font2_height + line_spacing;
-    display_y += 3; // adjust
+    display_y += font2_1_height + line_spacing;
     u8g2_1.setCursor(0, display_y);
     u8g2_1.print(ntpSyd.formattedTime("%H:%M:%S"));
+    u8g2_1.setFont(font1);
     if (ntpSyd.isDST()) {
-      u8g2_1.println(" AEDT");
+      u8g2_1.println("AEDT");
     } else {
-      u8g2_1.println(" AEST");
+      u8g2_1.println("AEST");
     }
-    u8g2_1.setFont(font1); // reset font
+    u8g2_1.setFont(font2_1); // reset font
 
-    display_y += font1_height + line_spacing;
+    display_y += font2_1_height + line_spacing;
     u8g2_1.setCursor(0, display_y);
     u8g2_1.println(tempStr);
 
@@ -278,36 +280,50 @@ void loop() {
 
 
     u8g2_2.clearBuffer();
-    u8g2_2.setFont(font1);
+    u8g2_2.setFont(font2_1);
     display_y = 0;
-    display_y += font1_height + line_spacing;
-    display_y += 8; // adjust
+    display_y += font2_1_height + line_spacing;
     u8g2_2.setCursor(0, display_y);
     u8g2_2.print(ntpPT.formattedTime("%H"));
+    u8g2_2.setFont(font1);
     if (ntpPT.isDST()) {
-      u8g2_2.println(" pdt");
+      u8g2_2.println("PDT");
     } else {
-      u8g2_2.println(" pst");
+      u8g2_2.println("PST");
     }
-    u8g2_2.print("  ");
+    u8g2_2.setFont(font2_1);
+    u8g2_2.print(" ");
     u8g2_2.print(ntpET.formattedTime("%H"));
-    u8g2_2.print(" nyc");
+    u8g2_2.setFont(font1);
+    if (ntpET.isDST()) {
+      u8g2_2.println("EDT");
+    } else {
+      u8g2_2.println("EST");
+    }
 
-    display_y += font1_height + line_spacing;
+    u8g2_2.setFont(font2_1);
+    display_y += font2_1_height + line_spacing;
     u8g2_2.setCursor(0, display_y);
     u8g2_2.print(ntpUTC.formattedTime("%H"));
-    u8g2_2.print(" utc");
-    u8g2_2.print("  ");
+    u8g2_2.setFont(font1);
+    u8g2_2.print("UTC");
+    u8g2_2.setFont(font2_1);
+    u8g2_2.print(" ");
     u8g2_2.print(ntpLON.formattedTime("%H"));
-    u8g2_2.print(" lon");
+    u8g2_2.setFont(font1);
+    u8g2_2.print("LON");
 
-    display_y += font1_height + line_spacing;
+    u8g2_2.setFont(font2_1);
+    display_y += font2_1_height + line_spacing;
     u8g2_2.setCursor(0, display_y);
-    u8g2_2.print(ntpIndia.formattedTime("%H%M"));
-    u8g2_2.print(" in");
-    u8g2_2.print("  ");
+    u8g2_2.print(ntpIndia.formattedTime("%H:%M"));
+    u8g2_2.setFont(font1);
+    u8g2_2.print("IN");
+    u8g2_2.setFont(font2_1);
+    u8g2_2.print(" ");
     u8g2_2.print(ntpSG.formattedTime("%H"));
-    u8g2_2.print(" sg");
+    u8g2_2.setFont(font1);
+    u8g2_2.print("SG");
 
     u8g2_2.sendBuffer();
 
