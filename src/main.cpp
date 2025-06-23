@@ -67,6 +67,7 @@ const uint8_t *font2_1 = u8g2_font_profont22_tf;
 const int font2_1_height = 14;
 
 const int line_spacing = 3;
+const int line_spacing2 = 8;
 
 void setup_wifi() {
   delay(10);
@@ -256,11 +257,11 @@ void loop() {
     u8g2_1.clearBuffer();
     u8g2_1.setFont(font2_1);
     display_y = 0;
-    display_y += font2_1_height + line_spacing;
+    display_y += font2_1_height;
     u8g2_1.setCursor(0, display_y);
     u8g2_1.print(ntpSyd.formattedTime("%Y-%m-%d"));
 
-    display_y += font2_1_height + line_spacing;
+    display_y += font2_1_height + line_spacing2;
     u8g2_1.setCursor(0, display_y);
     u8g2_1.print(ntpSyd.formattedTime("%H:%M:%S"));
     u8g2_1.setFont(font1);
@@ -271,7 +272,7 @@ void loop() {
     }
     u8g2_1.setFont(font2_1); // reset font
 
-    display_y += font2_1_height + line_spacing;
+    display_y += font2_1_height + line_spacing2;
     u8g2_1.setCursor(0, display_y);
     u8g2_1.println(tempStr);
 
@@ -282,7 +283,7 @@ void loop() {
     u8g2_2.clearBuffer();
     u8g2_2.setFont(font2_1);
     display_y = 0;
-    display_y += font2_1_height + line_spacing;
+    display_y += font2_1_height;
     u8g2_2.setCursor(0, display_y);
     u8g2_2.print(ntpPT.formattedTime("%H"));
     u8g2_2.setFont(font1);
@@ -302,7 +303,7 @@ void loop() {
     }
 
     u8g2_2.setFont(font2_1);
-    display_y += font2_1_height + line_spacing;
+    display_y += font2_1_height + line_spacing2;
     u8g2_2.setCursor(0, display_y);
     u8g2_2.print(ntpUTC.formattedTime("%H"));
     u8g2_2.setFont(font1);
@@ -314,7 +315,7 @@ void loop() {
     u8g2_2.print("LON");
 
     u8g2_2.setFont(font2_1);
-    display_y += font2_1_height + line_spacing;
+    display_y += font2_1_height + line_spacing2;
     u8g2_2.setCursor(0, display_y);
     u8g2_2.print(ntpIndia.formattedTime("%H"));
     // u8g2_2.setFont(font1);
