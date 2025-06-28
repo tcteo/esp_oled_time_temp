@@ -36,6 +36,8 @@ u8g2_1(U8G2_R0, U8X8_PIN_NONE, /*SCL*/ D1, /*SDA*/ D2);
 #if NUM_DISPLAYS >= 2
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C
 u8g2_2(U8G2_R0, /*SCL*/ D5, /*SDA*/ D6, U8X8_PIN_NONE);
+#else
+U8G2 u8g2_2; // uninitialized, unused
 #endif
 
 const int numDisplays = NUM_DISPLAYS;
