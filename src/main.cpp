@@ -63,11 +63,21 @@ const int font2_height = 11;
 const uint8_t *font3 = u8g2_font_t0_13_mf; // u8g2_font_shylock_nbp_t_all;
 const int font3_height = 9;
 
-const uint8_t *font2_1 = u8g2_font_profont22_tf;
-const int font2_1_height = 14;
+const uint8_t *h_font = u8g2_font_profont22_tf;
+const int h_font_height = 14;
+const uint8_t *m_font = u8g2_font_profont12_tf;
+int h_m_font_superscript_offset = 6;
+const uint8_t *m2_font =
+    u8g2_font_profont17_tf; // font for emphasizing timezones with minutes that
+                            // are not whole hours
+int h_m2_font_superscript_offset = 3;
+const uint8_t *tz_font = u8g2_font_profont15_tf;
+const int tz_font_height = 9;
 
 const int line_spacing = 3;
 const int line_spacing2 = 8;
+const int extra_line_spacing2 =
+    4; // extra line spacing for the second line with 2 displays
 
 void setup_wifi() {
   delay(10);
@@ -186,15 +196,32 @@ void setup() {
   Serial.println("setup() done");
 }
 
+void print_time_hhmmtz(U8G2 *u8g2, NTP *ntp, const char *tz_st,
+                       const char *tz_dt, const uint8_t *h_font,
+                       const uint8_t *m_font, const uint8_t *tz_font,
+                       const int h_m_font_superscript_offset) {
+  u8g2->setFont(h_font);
+  u8g2->print(ntp->formattedTime("%H"));
+  u8g2->setCursor(u8g2->tx,
+                  u8g2->ty - h_m_font_superscript_offset); // superscript
+  u8g2->setFont(m_font);
+  u8g2->print(ntp->formattedTime("%M"));
+  u8g2->setCursor(u8g2->tx,
+                  u8g2->ty + h_m_font_superscript_offset); // return to baseline
+  u8g2->setFont(tz_font);
+  // u8g2->print(" "); // space between time and timezone name
+  if (ntp->isDST()) {
+    u8g2->println(tz_dt);
+  } else {
+    u8g2->println(tz_st);
+  }
+  u8g2->setFont(h_font);
+}
+
 void loop() {
 
   sensors_event_t event;
   tempSensor.getEvent(&event);
-
-  // Serial.print("Temperature: ");
-  // Serial.print(event.temperature);
-  // Serial.print(" degC");
-  // Serial.println("");
 
   char tempStr[10];
   int display_y;
@@ -255,78 +282,65 @@ void loop() {
   } else if (numDisplays == 2) {
 
     u8g2_1.clearBuffer();
-    u8g2_1.setFont(font2_1);
+    u8g2_1.setFont(h_font);
     display_y = 0;
-    display_y += font2_1_height;
+
+    display_y += h_font_height;
     u8g2_1.setCursor(0, display_y);
     u8g2_1.print(ntpSyd.formattedTime("%Y-%m-%d"));
 
-    display_y += font2_1_height + line_spacing2;
+    display_y += h_font_height + line_spacing2 + extra_line_spacing2;
     u8g2_1.setCursor(0, display_y);
-    u8g2_1.print(ntpSyd.formattedTime("%H:%M:%S"));
-    u8g2_1.setFont(font1);
-    if (ntpSyd.isDST()) {
-      u8g2_1.println("AEDT");
-    } else {
-      u8g2_1.println("AEST");
-    }
-    u8g2_1.setFont(font2_1); // reset font
 
-    display_y += font2_1_height + line_spacing2;
+    print_time_hhmmtz(&u8g2_1, &ntpPT, "PST", "PDT", h_font, m_font, tz_font,
+                      h_m_font_superscript_offset);
+    u8g2_1.print(" ");
+    print_time_hhmmtz(&u8g2_1, &ntpUTC, "UTC", "UTC", h_font, m_font, tz_font,
+                      h_m_font_superscript_offset);
+
+    display_y += h_font_height + line_spacing2;
     u8g2_1.setCursor(0, display_y);
-    u8g2_1.println(tempStr);
 
+    print_time_hhmmtz(&u8g2_1, &ntpET, "EST", "EDT", h_font, m_font, tz_font,
+                      h_m_font_superscript_offset);
+    u8g2_1.print(" ");
+    print_time_hhmmtz(&u8g2_1, &ntpLON, "LON", "LON", h_font, m_font, tz_font,
+                      h_m_font_superscript_offset);
 
     u8g2_1.sendBuffer();
 
-
     u8g2_2.clearBuffer();
-    u8g2_2.setFont(font2_1);
+    u8g2_2.setFont(h_font);
     display_y = 0;
-    display_y += font2_1_height;
+    display_y += h_font_height;
     u8g2_2.setCursor(0, display_y);
-    u8g2_2.print(ntpPT.formattedTime("%H"));
-    u8g2_2.setFont(font1);
-    if (ntpPT.isDST()) {
-      u8g2_2.println("PDT");
-    } else {
-      u8g2_2.println("PST");
-    }
-    u8g2_2.setFont(font2_1);
-    u8g2_2.print(" ");
-    u8g2_2.print(ntpET.formattedTime("%H"));
-    u8g2_2.setFont(font1);
-    if (ntpET.isDST()) {
-      u8g2_2.println("EDT");
-    } else {
-      u8g2_2.println("EST");
-    }
 
-    u8g2_2.setFont(font2_1);
-    display_y += font2_1_height + line_spacing2;
-    u8g2_2.setCursor(0, display_y);
-    u8g2_2.print(ntpUTC.formattedTime("%H"));
-    u8g2_2.setFont(font1);
-    u8g2_2.print("UTC");
-    u8g2_2.setFont(font2_1);
-    u8g2_2.print(" ");
-    u8g2_2.print(ntpLON.formattedTime("%H"));
-    u8g2_2.setFont(font1);
-    u8g2_2.print("LON");
+    u8g2_2.print(ntpSyd.formattedTime("%H:%M:%S"));
+    u8g2_2.setFont(tz_font);
+    if (ntpSyd.isDST()) {
+      u8g2_2.println("AEDT");
+    } else {
+      u8g2_2.println("AEST");
+    }
+    u8g2_2.setFont(h_font); // reset font
 
-    u8g2_2.setFont(font2_1);
-    display_y += font2_1_height + line_spacing2;
+    display_y += h_font_height + line_spacing2 + extra_line_spacing2;
     u8g2_2.setCursor(0, display_y);
-    u8g2_2.print(ntpIndia.formattedTime("%H"));
-    // u8g2_2.setFont(font1);
-    u8g2_2.print(ntpIndia.formattedTime(":%M"));
-    u8g2_2.setFont(font1);
-    u8g2_2.print("IN");
-    u8g2_2.setFont(font2_1);
-    u8g2_2.print(" ");
-    u8g2_2.print(ntpSG.formattedTime("%H"));
-    u8g2_2.setFont(font1);
-    u8g2_2.print("SG");
+
+    print_time_hhmmtz(&u8g2_2, &ntpIndia, "IN", "IN", h_font, m2_font, tz_font,
+                      h_m2_font_superscript_offset);
+
+    u8g2_2.setFont(tz_font); // use this font for temperatur
+    int old_display_y = display_y;
+    display_y = display_y - h_font_height + tz_font_height;
+    u8g2_2.setCursor(128 - u8g2_2.getUTF8Width(tempStr), display_y);
+    u8g2_2.print(tempStr);
+    display_y = old_display_y;
+
+    display_y += h_font_height + line_spacing2;
+    u8g2_2.setCursor(0, display_y);
+    print_time_hhmmtz(&u8g2_2, &ntpSG, "SIN", "SIN", h_font, m_font, tz_font,
+                      h_m_font_superscript_offset);
 
     u8g2_2.sendBuffer();
 
