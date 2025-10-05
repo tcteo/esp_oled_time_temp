@@ -14,14 +14,14 @@
 Build only
 
 ```
-PLATFORMIO_BUILD_FLAGS="-DWIFI_SSID=some_wifi_ssid -DWIFI_PASS=some_wifi_password" \
+PLATFORMIO_BUILD_FLAGS="-DNUM_DISPLAYS=2 -DWIFI_SSID=wifi_ssid -DWIFI_PASS=wifi_password" \
   uv run pio run
 ```
 
 Build and flash
 
 ```
-PLATFORMIO_BUILD_FLAGS="-DWIFI_SSID=some_wifi_ssid -DWIFI_PASS=some_wifi_password" \
+PLATFORMIO_BUILD_FLAGS="-DNUM_DISPLAYS=2 -DWIFI_SSID=wifi_ssid -DWIFI_PASS=wifi_password" \
   uv run pio run --target upload -e d1_mini
 ```
 
