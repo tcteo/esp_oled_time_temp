@@ -168,8 +168,12 @@ void setup() {
 
   // Initialize NTP
   const int ntpUpdateIntervalMs = 10000; // 10s
-  ntpSyd.ruleDST("AEDT", First, Sun, Oct, 2, 11 * 60);
-  ntpSyd.ruleSTD("AEST", First, Sun, Apr, 3, 10 * 60);
+  // https://github.com/sstaub/NTP/issues/16. this doesn't work correctly:
+  // ntpSyd.ruleDST("AEDT", First, Sun, Oct, 2, 11 * 60);
+  // ntpSyd.ruleSTD("AEST", First, Sun, Apr, 3, 10 * 60);
+  // Use the workaround suggested in the issue, swap ruleDST/ruleSTD:
+  ntpSyd.ruleSTD("AEDT", First, Sun, Oct, 2, 11 * 60);
+  ntpSyd.ruleDST("AEST", First, Sun, Apr, 3, 10 * 60);
   ntpSyd.updateInterval(ntpUpdateIntervalMs);
   ntpSyd.begin();
   ntpPT.ruleDST("PDT", Second, Sun, Mar, 2, -7 * 60);
