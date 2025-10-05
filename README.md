@@ -7,6 +7,8 @@
 
 ![](esp_oled_time_temp.jpg)
 
+![](esp_oled_time_temp_2display.jpg)
+
 ## Building and Flashing
 
 Build only
